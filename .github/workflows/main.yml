@@ -1,0 +1,28 @@
+name: Telegram Userbot 24/7
+
+on:
+  schedule:
+      - cron: '0 */6 * * *'
+        workflow_dispatch:
+
+        jobs:
+          run-bot:
+              runs-on: ubuntu-latest
+                  steps:
+                        - name: Checkout Code
+                                uses: actions/checkout@v3
+
+                                      - name: Set up Python
+                                              uses: actions/setup-python@v4
+                                                      with:
+                                                                python-version: '3.11'
+
+                                                                      - name: Install Dependencies
+                                                                              run: |
+                                                                                        pip install telethon python-dotenv
+
+                                                                                              - name: Run Userbot
+                                                                                                      env:
+                                                                                                                SESSION_STRING: ${{ secrets.SESSION_STRING }}
+                                                                                                                        run: |
+                                                                                                                                  timeout 21000s python userbot.py || true
