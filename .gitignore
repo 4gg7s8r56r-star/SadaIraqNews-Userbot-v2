@@ -1,0 +1,12 @@
+.*
+!/.github
+!/.gitignore
+Downloads/
+terminal_full_output/
+get_session.py
+requirements.txt
+.env
+__pycache__/
+*.pyc
+skills/
+sandbox.txt
