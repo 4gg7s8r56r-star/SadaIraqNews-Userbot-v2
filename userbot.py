@@ -13,11 +13,14 @@ API_HASH = '40c6426dfd0d378895510f00727e2f86'
 SESSION_STRING = os.getenv('SESSION_STRING')
 TARGET_CHANNEL = 'SadaIraqNews1'  # يوزر قناتك
 
-# القنوات المصدر
+# القنوات المصدر وإعداداتها
+# media: True تعني نقل كل شيء (نصوص، صور، فيديو)
+# media: False تعني نقل النصوص فقط وتجاهل الوسائط
 SOURCES = {
     'AjaNews': {'media': False},
     'SabrenNewss': {'media': False},
-    'Iraq_now3': {'media': True}
+    'Iraq_now3': {'media': True},
+    'ONEIQ1': {'media': True}
 }
 
 client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
@@ -58,11 +61,16 @@ async def handler(event):
     allow_media = SOURCES[username]['media']
     
     try:
-        if event.message.media and allow_media:
-            # إرسال مع الوسائط (صور/فيديو) من قناة Iraq_now3 فقط
-            await client.send_file(TARGET_CHANNEL, event.message.media, caption=cleaned_text)
-        elif not event.message.media or not allow_media:
-            # إرسال نص فقط لباقي القنوات أو إذا كانت الميديا غير مسموحة
+        if event.message.media:
+            if allow_media:
+                # إرسال مع الوسائط (صور/فيديو) للقنوات المسموح لها
+                await client.send_file(TARGET_CHANNEL, event.message.media, caption=cleaned_text)
+            else:
+                # إذا كانت الميديا غير مسموحة (مثل الجزيرة)، نرسل النص فقط إذا وجد
+                if cleaned_text.strip():
+                    await client.send_message(TARGET_CHANNEL, cleaned_text)
+        else:
+            # رسالة نصية فقط
             if cleaned_text.strip():
                 await client.send_message(TARGET_CHANNEL, cleaned_text)
     except Exception as e:
